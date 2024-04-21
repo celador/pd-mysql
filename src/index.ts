@@ -5,13 +5,8 @@ import { styleTags, tags as t } from "@lezer/highlight";
 const config = parser.configure({
   props: [
     styleTags({
-      Program: t.comment,
-      Statement: t.comment,
-      TemplateExpression: t.comment,
-      OpenCurly: t.comment,
-      Whitespace: t.comment,
-      VariablePath: t.comment,
-      CloseCurly: t.comment,
+      Mustache: t.comment,
+      SQL: t.content,
     }),
   ],
 })
@@ -20,7 +15,7 @@ export const language = LRLanguage.define({
   name: "pd-mustache",
   parser: config,
   languageData: {
-    autocomplete: (...args) => {}
+    // autocomplete: (...args) => { }
   }
 });
 

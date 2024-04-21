@@ -1,16 +1,21 @@
-@top Program { (Text | Statement)* }
-
-TemplateExpression { OpenCurly Whitespace* VariablePath Whitespace* CloseCurly }
-Statement { Text TemplateExpression Text }
+@top Program { (SQL | Mustache)* }
 
 @tokens {
-  Dot { "." }
-  Text { ![{}] }
-  Whitespace { std.whitespace }
-  Letter { std.asciiLetter+ }
-  Digit { std.digit+ }
-  VariablePath { Letter (Letter | Digit | Dot)* }
+  // Matches non-special characters and non-opening brace sequences
+  SQL { (NonBrace | LoneCurly)+ }
 
-  OpenCurly { "{{" }
-  CloseCurly { "}}" }
+  // Matches any character except '{' or '}'
+  NonBrace { ![{}] }
+
+  // Matches a single '{' that does not start a Mustache block
+  LoneCurly { "{" NotOpenMustache }
+
+  // Matches any single character that doesn't start a Mustache block
+  NotOpenMustache { ![{}] }
+
+  // Mustache block explicitly defined
+  Mustache { "{{" @whitespace* VariablePath @whitespace* "}}" }
+
+  // Define what constitutes a valid VariablePath
+  VariablePath { @asciiLetter+ (@asciiLetter | @digit | ".")* }
 }
