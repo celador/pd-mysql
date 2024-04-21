@@ -1,10 +1,16 @@
+@top Program { (Text | Statement)* }
+
+TemplateExpression { OpenCurly Whitespace* VariablePath Whitespace* CloseCurly }
+Statement { Text TemplateExpression Text }
+
 @tokens {
-  @extend whitespace { }
+  Dot { "." }
+  Text { ![{}] }
+  Whitespace { std.whitespace }
+  Letter { std.asciiLetter+ }
+  Digit { std.digit+ }
+  VariablePath { Letter (Letter | Digit | Dot)* }
 
-  handlebars { "{{" $+ ("." $+)* "}}" }
-  text { $[^{]* }
-}
-
-@top Program {
-  (handlebars | text)*
+  OpenCurly { "{{" }
+  CloseCurly { "}}" }
 }
