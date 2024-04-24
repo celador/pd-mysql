@@ -1,21 +1,31 @@
 @top Program { (SQL | Mustache)* }
 
 @tokens {
-  // Matches non-special characters and non-opening brace sequences
+  // Simplified SQL tokens, ensuring non-special character matching
   SQL { (NonBrace | LoneCurly)+ }
-
-  // Matches any character except '{' or '}'
   NonBrace { ![{}] }
+  LoneCurly { "{" NotOpenMustache | "}" NotCloseMustache }
+  NotOpenMustache { ![{"}] }
+  NotCloseMustache { ![}"] }
 
-  // Matches a single '{' that does not start a Mustache block
-  LoneCurly { "{" NotOpenMustache }
+  // Explicitly separate Mustache-related tokens to ensure they are exported
+  OpenMustache { "{{" }
+  CloseMustache { "}}" }
+  // Distinct definition for Mustache content that includes the Open and Close tokens
+  Mustache {
+    OpenMustache @whitespace* VariablePath* @whitespace* CloseMustache
+  }
 
-  // Matches any single character that doesn't start a Mustache block
-  NotOpenMustache { ![{}] }
+  Dot { "." }
+  Underscore { "_" }
+  Dollar { "$" }
 
-  // Mustache block explicitly defined
-  Mustache { "{{" @whitespace* VariablePath @whitespace* "}}" }
-
-  // Define what constitutes a valid VariablePath
-  VariablePath { @asciiLetter+ (@asciiLetter | @digit | ".")* }
+  PartStart { @asciiLetter | Underscore | Dollar }
+  PartContinue { @asciiLetter | @digit | Underscore | Dollar | Dot | "[" | "]" | "(" | ")" }
+  PathPart {
+    PartStart PartContinue*
+  }
+  VariablePath {
+    PathPart (Dot PathPart)*
+  }
 }
