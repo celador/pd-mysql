@@ -26,6 +26,6 @@
     PartStart PartContinue*
   }
   VariablePath {
-    PathPart (Dot PathPart)*
+    PathPart
   }
 }
